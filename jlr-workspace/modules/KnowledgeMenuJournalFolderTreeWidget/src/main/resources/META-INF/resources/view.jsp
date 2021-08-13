@@ -38,11 +38,7 @@
 		if(ch.title)
 			li.innerHTML='<a href="'+ch.friendlyUrl+'">'+ch.title+'</a>';
 		else{
-			let [spanClass,ulClass]=["caret","nested"];
-			if(ch.expand){
-				spanClass+=" caret-down";
-				ulClass+=" active";
-			}
+			let [spanClass,ulClass]=[ch.expand?"caret caret-down":"caret",ch.expand?"nested active":"nested"];
 			li.innerHTML='<span class="'+spanClass+'">'+ch.name+'</span><ul class="'+ulClass+'"></ul>';
 		}
 	    domE.append(li);

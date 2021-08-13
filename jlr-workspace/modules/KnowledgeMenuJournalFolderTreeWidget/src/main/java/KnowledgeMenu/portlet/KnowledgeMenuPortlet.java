@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.util.WebKeys;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.portlet.Portlet;
 import javax.portlet.PortletException;
@@ -51,12 +52,11 @@ import KnowledgeMenu.constants.KnowledgeMenuPortletKeys;
 )
 public class KnowledgeMenuPortlet extends MVCPortlet {
 	
-	
-	
 	//TODO: move these to a configuration
 	private static final Object BASE_FOLDER = 37849;
 	private static final String BASE_URL = "http://localhost:8080/web/guest/-/";
 	private static final String DDM_STRUCTURE_KEY= "38121";
+	private static final String EXPANDO_ATTR_LOCALISED_FOLDER_NAME = "Localised Folder Name";
 
 	@Override
 	public void doView( RenderRequest renderRequest, RenderResponse renderResponse)
@@ -96,11 +96,15 @@ public class KnowledgeMenuPortlet extends MVCPortlet {
 		
 		JSONArray jsonAF = JSONFactoryUtil.createJSONArray();
 		folders.stream().forEach(f->{
-			HashMap<String,String> localizedFolderName= (HashMap<String, String>) f.getExpandoBridge().getAttribute("Localised Folder Name");
+			String folderName = f.getName();
 			JSONObject json = JSONFactoryUtil.createJSONObject();	
-			if(localizedFolderName.get(themeDisplay.getLocale())!=null) {
-				json.put("name", localizedFolderName.get(themeDisplay.getLocale()));}
-			else {json.put("name", f.getName()); }
+			if(f.getExpandoBridge().hasAttribute(EXPANDO_ATTR_LOCALISED_FOLDER_NAME)){
+				Map<String,String> localizedFolderName= 
+						(Map<String,String>)f.getExpandoBridge().getAttribute(EXPANDO_ATTR_LOCALISED_FOLDER_NAME);
+				if(localizedFolderName.get(themeDisplay.getLocale())!=null) 
+				folderName=localizedFolderName.get(themeDisplay.getLocale());
+			}
+			json.put("name", folderName);
 			json.put("parent", f.getParentFolderId());
 			json.put("id", f.getFolderId());
 			jsonAF.put(json);
