@@ -26,13 +26,13 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
 import KnowledgeMenu.config.KnowledgeMenuConfiguration;
 import KnowledgeMenu.constants.KnowledgeMenuPortletKeys;
-import aQute.bnd.annotation.component.Activate;
-import aQute.bnd.annotation.component.Modified;
 
 /**
  * @author carlos
