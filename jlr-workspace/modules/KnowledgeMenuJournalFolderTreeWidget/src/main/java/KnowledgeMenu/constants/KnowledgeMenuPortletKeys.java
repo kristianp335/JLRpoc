@@ -5,7 +5,6 @@ package KnowledgeMenu.constants;
  */
 public class KnowledgeMenuPortletKeys {
 
-	public static final String KNOWLEDGEMENU =
-		"KnowledgeMenu_KnowledgeMenuPortlet";
+	public static final String KNOWLEDGEMENU = "KnowledgeMenu_KnowledgeMenuPortlet";
 
 }
