@@ -51,19 +51,23 @@ import KnowledgeMenu.constants.KnowledgeMenuPortletKeys;
 )
 public class KnowledgeMenuPortlet extends MVCPortlet {
 	
+	
+	
+	//TODO: move these to a configuration
+	private static final Object BASE_FOLDER = 37849;
+	private static final String BASE_URL = "http://localhost:8080/web/guest/-/";
+	private static final String DDM_STRUCTURE_KEY= "38121";
+
 	@Override
 	public void doView( RenderRequest renderRequest, RenderResponse renderResponse)
 		throws IOException, PortletException {
-		
-		
 		
 		ThemeDisplay themeDisplay = (ThemeDisplay) renderRequest.getAttribute(WebKeys.THEME_DISPLAY);
 		long groupId = themeDisplay.getSiteGroupId();
         boolean ascending=true;
 		OrderByComparator<JournalArticle> orderByComparator = new ArticleIDComparator(ascending);
 		
-		String ddmStructureKey= "38121";
-		List<JournalArticle> articles = _jaService.getArticlesByStructureId(groupId, ddmStructureKey, 0, Integer.MAX_VALUE,orderByComparator);
+		List<JournalArticle> articles = _jaService.getArticlesByStructureId(groupId, DDM_STRUCTURE_KEY, 0, Integer.MAX_VALUE,orderByComparator);
 		JSONArray jsonAA = JSONFactoryUtil.createJSONArray();
 		articles.stream().forEach(a->{
 			JSONObject json = JSONFactoryUtil.createJSONObject();
@@ -71,26 +75,21 @@ public class KnowledgeMenuPortlet extends MVCPortlet {
 			json.put("folder",a.getFolderId());
 			json.put("id",a.getArticleId());
 			try {
-				//System.out.println("url="+themeDisplay.getURLHome()+themeDisplay.getLayout().getGroup().getFriendlyURL());
-				json.put("friendlyUrl", "http://localhost:8080/web/guest/-/"+a.getUrlTitle(themeDisplay.getLocale()));
+				json.put("friendlyUrl", BASE_URL+a.getUrlTitle(themeDisplay.getLocale()));
 			} catch (PortalException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
 			jsonAA.put(json);
 		});
 		
 		try{
 			HttpServletRequest request = PortalUtil.getHttpServletRequest(renderRequest);
-	
 			String url = request.getRequestURL().toString().split("/-/")[1];
 			JournalArticle a = _jaService.getDisplayArticleByUrlTitle(groupId, url);
 			renderRequest.setAttribute("articleId", a.getArticleId());
 		}catch(Exception e) {
 			System.out.println("No Article to display. Display default");
 		}
-
 
 		boolean r=true;
 		List<JournalFolder> folders = _jfService.getFolders(groupId);
@@ -108,8 +107,7 @@ public class KnowledgeMenuPortlet extends MVCPortlet {
 		});
 		renderRequest.setAttribute("articles", jsonAA.toJSONString());
 		renderRequest.setAttribute("folders", jsonAF.toJSONString());
-		renderRequest.setAttribute("baseFolder", 37849);
-
+		renderRequest.setAttribute("baseFolder", BASE_FOLDER);
 
 		include(viewTemplate, renderRequest, renderResponse);
 	}
