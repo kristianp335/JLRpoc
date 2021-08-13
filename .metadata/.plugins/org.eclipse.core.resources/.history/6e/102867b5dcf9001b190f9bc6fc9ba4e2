@@ -1,0 +1,68 @@
+package webcontent.menu.portlet.actions;
+
+import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.model.JournalFolder;
+import com.liferay.journal.service.JournalFolderLocalServiceUtil;
+import com.liferay.journal.service.JournalFolderServiceUtil;
+import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
+import com.liferay.portal.kernel.util.OrderByComparator;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.portlet.PortletException;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+
+import org.osgi.service.component.annotations.Component;
+
+import webcontent.menu.constants.WebcontentMenuPortletKeys;
+
+@Component(
+		immediate = true,
+		property = {
+		"javax.portlet.name=" + WebcontentMenuPortletKeys.WEBCONTENTMENU,
+		 "mvc.command.name=/","mvc.command.name=/view_menu"
+		},
+		service = MVCRenderCommand.class)
+public class ViewMenuListingRender implements MVCRenderCommand{
+
+	@Override
+	public String render(RenderRequest renderRequest, RenderResponse renderResponse) throws PortletException {
+		
+		ServiceContext serviceContext =
+			    ServiceContextThreadLocal.getServiceContext();
+		OrderByComparator orderByComparator=null;
+		
+		JournalFolder basejf=JournalFolderLocalServiceUtil.fetchFolder(serviceContext.getScopeGroupId(), "BaseFolder");
+		int baseJfCount=JournalFolderServiceUtil.getFoldersAndArticlesCount(serviceContext.getScopeGroupId(), basejf.getFolderId(), 0);
+		List<Object> jfList=JournalFolderServiceUtil.getFoldersAndArticles(serviceContext.getScopeGroupId(), basejf.getFolderId(), 0,0, baseJfCount, orderByComparator);
+
+		List<JournalFolder> journalFolders=jfList.stream().filter(a->
+			a.getClass().getName().contains("JournalFolder")
+		).map(x->((JournalFolder)x)).collect(Collectors.toList());
+		
+		List<JournalArticle> journalArticles=jfList.stream().filter(a->
+		a.getClass().getName().contains("JournalArticle")
+	).map(x->((JournalArticle)x)).filter(x->x.getDDMStructureKey().equals("38121")).collect(Collectors.toList());
+		
+		
+		journalArticles.forEach(a->{
+			System.out.println(a.getArticleId() + a.getFolderId());
+		});
+		
+//		List<JournalArticle> ja=jfList.stream().filter(a->
+//			a.getClass().getName().contains("JournalArticle")
+//		).map(x->((JournalArticle)x).getDDMStructureKey()).collect(Collectors.toList());
+//			System.out.println(a.getClass().getName().equals(anObject));
+//		});
+		
+		
+
+		
+		return "/view.jsp";
+	}
+
+}

@@ -1,0 +1,5 @@
+package webcontent.menu.portlet.actions;
+
+public class ViewMenuListingRender {
+
+}

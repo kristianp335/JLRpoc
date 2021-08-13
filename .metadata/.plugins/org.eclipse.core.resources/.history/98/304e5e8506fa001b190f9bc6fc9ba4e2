@@ -1,0 +1,53 @@
+package webcontent.menu.portlet.actions;
+
+import com.liferay.journal.model.JournalFolder;
+import com.liferay.journal.service.JournalFolderLocalServiceUtil;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
+import com.liferay.portal.kernel.util.OrderByComparator;
+
+import javax.portlet.PortletException;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+import webcontent.menu.constants.WebcontentMenuPortletKeys;
+import webcontent.service.WebcontentService;
+
+@Component(
+		immediate = true,
+		property = {
+		"javax.portlet.name=" + WebcontentMenuPortletKeys.WEBCONTENTMENU,
+		 "mvc.command.name=/","mvc.command.name=/view_menu"
+		},
+		service = MVCRenderCommand.class)
+public class ViewMenuListingRender implements MVCRenderCommand{
+
+	@Override
+	public String render(RenderRequest renderRequest, RenderResponse renderResponse) throws PortletException {
+		
+		ServiceContext serviceContext =
+			    ServiceContextThreadLocal.getServiceContext();
+		OrderByComparator orderByComparator=null;
+		
+		JournalFolder basejf=JournalFolderLocalServiceUtil.fetchFolder(serviceContext.getScopeGroupId(), "BaseFolder");
+
+		JSONObject listing=webContentService.getMenuListingg(serviceContext.getScopeGroupId(), basejf);
+		System.out.println("json="+listing.toString());
+//		for(JournalFolder a: listing.keySet()) {
+//			System.out.println("key="+a);
+//			System.out.println("value="+listing.get(a));
+//		}
+		
+		//renderRequest.setAttribute("listing", listing);
+		
+		return "/view.jsp";
+	}
+
+	@Reference
+	private WebcontentService webContentService;
+}

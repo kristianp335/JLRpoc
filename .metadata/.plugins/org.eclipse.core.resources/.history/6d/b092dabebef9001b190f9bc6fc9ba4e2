@@ -1,0 +1,11 @@
+<%@ include file="/init.jsp" %>
+
+<p>
+	<b><liferay-ui:message key="webcontentmenu.caption"/></b>
+</p>
+
+<portlet:renderURL var="viewMenu">
+	<portlet:param name="mvcRenderCommandName" value="/view_menu" />
+</portlet:renderURL>
+
+ <h:outputText var="<%=viewMenu%>"/>  

@@ -1,0 +1,29 @@
+<%@page import="com.liferay.journal.model.JournalFolder"%>
+<%@ include file="./init.jsp" %>
+
+<p>
+	<b><liferay-ui:message key="webcontentmenu.caption"/></b>
+</p>
+
+<portlet:renderURL var="viewMenu">
+	<portlet:param name="mvcRenderCommandName" value="/view_menu" />
+</portlet:renderURL>
+
+ <h:outputText var="<%=viewMenu%>"/>  
+ <% Map<JournalFolder,List<Object>> listing = renderRequest.getParameter("listing");%> 
+ 
+ <div class="container-fluid-1280">
+<%-- <c:forEach var="entry" items="${listing}">
+  Key: <c:out value="${entry.key}"/>
+  Value: <c:out value="${entry.value}"/>
+</c:forEach>  --%>
+
+<%-- <% for(JournalFolder a: listing.keySet()){
+	
+}
+
+	%> --%>
+
+ </div>
+ 
+ 

@@ -1,0 +1,49 @@
+package webcontent.menu.portlet.actions;
+
+import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.service.JournalFolderServiceUtil;
+import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
+import com.liferay.portal.kernel.util.OrderByComparator;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.portlet.PortletException;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+
+import org.osgi.service.component.annotations.Component;
+
+import webcontent.menu.constants.WebcontentMenuPortletKeys;
+
+@Component(
+		immediate = true,
+		property = {
+		"javax.portlet.name=" + WebcontentMenuPortletKeys.WEBCONTENTMENU,
+		 "mvc.command.name=/","mvc.command.name=/view_menu"
+		},
+		service = MVCRenderCommand.class)
+public class ViewMenuListingRender implements MVCRenderCommand{
+
+	@Override
+	public String render(RenderRequest renderRequest, RenderResponse renderResponse) throws PortletException {
+		
+		ServiceContext serviceContext =
+			    ServiceContextThreadLocal.getServiceContext();
+		OrderByComparator orderByComparator=null;
+		
+		
+		List<Object> jfList=JournalFolderServiceUtil.getFoldersAndArticles(serviceContext.getScopeGroupId(), 37849, 0, 10, orderByComparator);
+
+		jfList.forEach(a->{
+			System.out.println(a.getClass().getAnnotatedSuperclass());
+		});
+		
+
+		
+		return "/view.jsp";
+	}
+
+}

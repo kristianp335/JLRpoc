@@ -1,0 +1,4 @@
+default-liferay-version-option=7.3
+eclipse.preferences.version=1
+project-module-default-build-type-option=gradle-module
+project-workspace-default-build-type-option=gradle-liferay-workspace

@@ -1,0 +1,21 @@
+package webcontent.service;
+
+import com.liferay.admin.kernel.util.Omniadmin;
+
+import org.osgi.service.component.annotations.Component;
+
+/**
+ * @author nimisha
+ */
+@Component(
+	immediate = true,
+	property = {
+		// TODO enter required service properties
+	},
+	service = WebcontentService.class
+)
+public class WebcontentService  {
+
+	// TODO enter required service methods
+
+}

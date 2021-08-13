@@ -1,0 +1,11 @@
+package webcontent.menu.constants;
+
+/**
+ * @author nimisha
+ */
+public class WebcontentMenuPortletKeys {
+
+	public static final String WEBCONTENTMENU =
+		"webcontent_menu_WebcontentMenuPortlet";
+
+}

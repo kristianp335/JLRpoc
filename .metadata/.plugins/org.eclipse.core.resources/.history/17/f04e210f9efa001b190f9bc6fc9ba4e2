@@ -1,0 +1,74 @@
+<%@page import="com.liferay.journal.model.JournalFolder"%>
+<%@ include file="./init.jsp" %>
+
+ 
+
+<p>
+	<b><liferay-ui:message key="webcontentmenu.caption"/></b>
+</p>
+
+<portlet:renderURL var="viewMenu">
+	<portlet:param name="mvcRenderCommandName" value="/view_menu" />
+</portlet:renderURL>
+
+ <h:outputText var="<%=viewMenu%>"/>  
+<% JSONObject listing = renderRequest.getParameter("listing");%>
+
+<ul id="menu">
+  
+</ul>
+
+<script>
+let json= <%=listing%>;
+
+var menu = document.getElementById("menu");
+
+displayFolders(json.SubFolders);
+displayArticle(json.ArticleList,"menu");
+
+function displayFolders(sub){
+  for(var i = 0; i < sub.length; i++) {
+var span_obj = document.createElement("span");
+span_obj.setAttribute("class", "caret");
+span_obj.innerHTML = sub[i].FolderName;
+document.getElementById("menu").appendChild(span_obj);
+
+var ul_object = document.createElement("ul");
+ul_object.setAttribute("class","nested");
+ul_object.setAttribute("id","subfolder");
+var subfolder=document.getElementsByClassName("caret")
+subfolder[i].appendChild(ul_object);
+
+
+ if(sub[i].ArticleList.length!=0){
+displayArticle(sub[i].ArticleList,"subfolder")
+} 
+  }
+}
+function displayArticle(articles,id){
+
+  for(var i = 0; i < articles.length; i++) {
+  var ul_obj=document.getElementById(id);
+  var li_obj = document.createElement("li");
+	li_obj.innerHTML = articles[i].ArticleName;
+  ul_obj.appendChild(li_obj);
+
+  }
+}
+
+var toggler = document.getElementsByClassName("caret");
+var i;
+
+for (i = 0; i < toggler.length; i++) {
+  toggler[i].addEventListener("click", function() {
+    this.parentElement.querySelector(".nested").classList.toggle("active");
+    this.classList.toggle("caret-down");
+  });
+}
+
+</script>
+
+ 
+
+ 
+ 

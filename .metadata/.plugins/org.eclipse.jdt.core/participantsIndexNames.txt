@@ -1,0 +1,7 @@
+INDEX VERSION 1.131
+/Users/nimisha/Liferay/JLRpoc/.metadata/.plugins/org.eclipse.jst.jsp.core/jspsearch/608519921.index
+/webcontent-menu/src/main/java
+/Users/nimisha/Liferay/JLRpoc/.metadata/.plugins/org.eclipse.jst.jsp.core/jspsearch/128806161.index
+/KnowledgeMenuJournalFolderTreeWidget/src/main/java
+/Users/nimisha/Liferay/JLRpoc/.metadata/.plugins/org.eclipse.jst.jsp.core/jspsearch/3956356169.index
+/Foo/src/main/java

@@ -1,0 +1,63 @@
+package webcontent.service;
+
+import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.model.JournalFolder;
+import com.liferay.journal.service.JournalFolderLocalServiceUtil;
+import com.liferay.journal.service.JournalFolderServiceUtil;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
+import com.liferay.portal.kernel.util.OrderByComparator;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.osgi.service.component.annotations.Component;
+
+/**
+ * @author nimisha
+ */
+@Component(
+	immediate = true,
+	property = {
+		// TODO enter required service properties
+	},
+	service = WebcontentService.class
+)
+public class WebcontentService  {
+
+	public List<JournalFolder> getJournalFoldersFromObject(List<Object> jfList) {
+
+		List<JournalFolder> journalFolders=jfList.stream().filter(a->
+		a.getClass().getName().contains("JournalFolder")
+	).map(x->((JournalFolder)x)).collect(Collectors.toList());
+		
+		return journalFolders;
+		
+	}
+	
+	
+	public List<JournalArticle> getJournalArticleFromObject(List<Object> jfList){
+		List<JournalArticle> journalArticles=jfList.stream().filter(a->
+		a.getClass().getName().contains("JournalArticle")
+	).map(x->((JournalArticle)x)).filter(x->x.getDDMStructureKey().equals("38121")).collect(Collectors.toList());
+		
+		return journalArticles;
+	}
+	
+	public Map<JournalFolder,List<JournalArticle>> getMenuListing(){
+		ServiceContext serviceContext =
+			    ServiceContextThreadLocal.getServiceContext();
+		OrderByComparator orderByComparator=null;
+		
+		JournalFolder basejf=JournalFolderLocalServiceUtil.fetchFolder(serviceContext.getScopeGroupId(), "BaseFolder");
+		int baseJfCount=JournalFolderServiceUtil.getFoldersAndArticlesCount(serviceContext.getScopeGroupId(), basejf.getFolderId(), 0);
+		List<Object> jfList=JournalFolderServiceUtil.getFoldersAndArticles(serviceContext.getScopeGroupId(), basejf.getFolderId(), 0,0, baseJfCount, orderByComparator);
+		List<JournalArticle> journalArticles=getJournalArticleFromObject(jfList);
+		getJournalFoldersFromObject(jfList).forEach(jf->{
+			
+		});
+		
+	}
+
+}

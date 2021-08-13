@@ -1,0 +1,14 @@
+package webcontent.menu.portlet.actions;
+
+import webcontent.menu.constants.WebcontentMenuPortletKeys;
+
+@Component(
+		immediate = true,
+		property = {
+		"javax.portlet.name=" + WebcontentMenuPortletKeys.WEBCONTENTMENU,
+		 "mvc.command.name=/","mvc.command.name=/view_menu"
+		},
+		service = MVCRenderCommand.class)
+public class ViewMenuListingRender implements MVCRenderCommand{
+
+}

@@ -1,0 +1,28 @@
+<%@page import="com.liferay.journal.model.JournalFolder"%>
+<%@ include file="./init.jsp" %>
+
+<p>
+	<b><liferay-ui:message key="webcontentmenu.caption"/></b>
+</p>
+
+<portlet:renderURL var="viewMenu">
+	<portlet:param name="mvcRenderCommandName" value="/view_menu" />
+</portlet:renderURL>
+
+ <h:outputText var="<%=viewMenu%>"/>  
+<%-- <% JSONObject listing = renderRequest.getParameter("listing");%>  --%>
+
+<script>
+let listing= <%=listing%>
+
+var obj = JSON.parse(s);
+
+document.getElementById("user").innerHTML =
+"Name: " + obj.first_name + " " + obj.last_name + "<br>" +
+"Location: " + obj.location;
+</script>
+
+ 
+
+ 
+ 

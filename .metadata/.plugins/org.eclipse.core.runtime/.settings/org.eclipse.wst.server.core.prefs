@@ -1,0 +1,3 @@
+eclipse.preferences.version=1
+module-start-timeout=300000
+runtimes=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?>\n<runtimes>\n  <runtime id\="Liferay Digital Experience Platform 7.3.10 GA1" location\="/Users/nimisha/Liferay/JLRpoc/jlr-workspace/bundles/liferay-dxp-7.3.10-ga1" name\="Liferay Digital Experience Platform 7.3.10 GA1" runtime-type-id\="com.liferay.ide.server.portal.runtime" timestamp\="0" vm-install-id\="com.oracle.java.11.0.11.jdk" vm-install-type-id\="org.eclipse.jdt.internal.launching.macosx.MacOSXType"/>\n</runtimes>\n

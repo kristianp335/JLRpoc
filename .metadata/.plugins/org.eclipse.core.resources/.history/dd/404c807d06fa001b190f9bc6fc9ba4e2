@@ -1,0 +1,104 @@
+package webcontent.service;
+
+import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.model.JournalFolder;
+import com.liferay.journal.service.JournalFolderServiceUtil;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.xml.Document;
+import com.liferay.portal.kernel.xml.DocumentException;
+import com.liferay.portal.kernel.xml.Node;
+import com.liferay.portal.kernel.xml.SAXReaderUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.osgi.service.component.annotations.Component;
+
+/**
+ * @author nimisha
+ */
+@Component(
+	immediate = true,
+	property = {
+		// TODO enter required service properties
+	},
+	service = WebcontentService.class
+)
+public class WebcontentService  {
+
+	public List<JournalFolder> getJournalFoldersFromObject(List<Object> jfList) {
+
+		List<JournalFolder> journalFolders=jfList.stream().filter(a->
+		a.getClass().getName().contains("JournalFolder")
+	).map(x->((JournalFolder)x)).collect(Collectors.toList());
+		
+		return journalFolders;
+		
+	}
+	
+	
+	
+	
+	public JSONArray getJournalArticleFromObject(List<Object> jfList){
+		List<JournalArticle> journalArticles=jfList.stream().filter(a->
+		a.getClass().getName().contains("JournalArticle")
+	).map(x->((JournalArticle)x)).filter(x->x.getDDMStructureKey().equals("38121")).collect(Collectors.toList());
+		
+		JSONArray jArticlesList = JSONFactoryUtil.createJSONArray();
+		
+		journalArticles.forEach(ja->{
+			JSONObject article = JSONFactoryUtil.createJSONObject();
+			article.put("ArticleId", ja.getArticleId());
+			article.put("ArticleName", getStringFields(ja.getContent(), "Title"));
+			article.put("ArticleContent", getStringFields(ja.getContent(), "Content"));
+			jArticlesList.put(article);
+		});
+		
+		return jArticlesList;
+	}
+	
+
+	
+	
+	public JSONObject getMenuListingg(long groupId, JournalFolder journalFolder){
+		int jfCount=JournalFolderServiceUtil.getFoldersAndArticlesCount(groupId, journalFolder.getFolderId(), 0);
+		List<Object> jfList=JournalFolderServiceUtil.getFoldersAndArticles(groupId, journalFolder.getFolderId(), 0,0, jfCount, null);
+		JSONObject listing = JSONFactoryUtil.createJSONObject();
+		JSONArray subList= JSONFactoryUtil.createJSONArray();
+		if(jfList!=null) {
+			JSONArray journalArticles=getJournalArticleFromObject(jfList);
+			List<JournalFolder> journalFolders=getJournalFoldersFromObject(jfList);
+			listing.put("FolderName", journalFolder.getName());
+			listing.put("FolderId", journalFolder.getFolderId());
+			listing.put("FolderDescription", journalFolder.getDescription());
+			listing.put("ArticleList", journalArticles);
+			journalFolders.forEach(folder->{
+				subList.put(getMenuListingg(groupId, folder));
+			});
+			listing.put("SubFolders", subList);
+		}
+
+		return listing;
+		
+	}
+	
+	public String getStringFields(String content, String fieldName)  {
+		Document doc;
+		try {
+			doc = SAXReaderUtil.read(content);
+		
+		Node node = doc.selectSingleNode("/root/dynamic-element[@name='"+fieldName+"']/dynamic-content");
+		//int number= Integer.parseInt(node.getText());
+		return node.getText();
+		} catch (DocumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "";
+	}
+
+}

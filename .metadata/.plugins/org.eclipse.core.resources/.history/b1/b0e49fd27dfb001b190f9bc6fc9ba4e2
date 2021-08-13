@@ -1,0 +1,96 @@
+package KnowledgeMenu.portlet;
+
+import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.model.JournalFolder;
+import com.liferay.journal.service.JournalArticleService;
+import com.liferay.journal.service.JournalFolderLocalServiceUtil;
+import com.liferay.journal.service.JournalFolderService;
+import com.liferay.journal.util.comparator.ArticleIDComparator;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.WebKeys;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.portlet.Portlet;
+import javax.portlet.PortletException;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+import KnowledgeMenu.constants.KnowledgeMenuPortletKeys;
+
+/**
+ * @author carlos
+ */
+@Component(
+	immediate = true,
+	property = {
+		"com.liferay.portlet.display-category=category.sample",
+		"com.liferay.portlet.header-portlet-css=/css/main.css",
+		"com.liferay.portlet.instanceable=true",
+		"javax.portlet.display-name=KnowledgeMenu",
+		"javax.portlet.init-param.template-path=/",
+		"javax.portlet.init-param.view-template=/view.jsp",
+		"javax.portlet.name=" + KnowledgeMenuPortletKeys.KNOWLEDGEMENU,
+		"javax.portlet.resource-bundle=content.Language",
+		"javax.portlet.security-role-ref=power-user,user",
+		"com.liferay.fragment.entry.processor.portlet.alias=webcontent-menu"
+	},
+	service = Portlet.class
+)
+public class KnowledgeMenuPortlet extends MVCPortlet {
+	
+	@Override
+	public void doView( RenderRequest renderRequest, RenderResponse renderResponse)
+		throws IOException, PortletException {
+		ThemeDisplay themeDisplay = (ThemeDisplay) renderRequest.getAttribute(WebKeys.THEME_DISPLAY);
+		long groupId = themeDisplay.getSiteGroupId();
+        boolean ascending=true;
+		OrderByComparator<JournalArticle> orderByComparator = new ArticleIDComparator(ascending);
+		
+		String ddmStructureKey= "38121";
+		List<JournalArticle> articles = _jaService.getArticlesByStructureId(groupId, ddmStructureKey, 0, Integer.MAX_VALUE,orderByComparator);
+		JSONArray jsonAA = JSONFactoryUtil.createJSONArray();
+		articles.stream().forEach(a->{
+			JSONObject json = JSONFactoryUtil.createJSONObject();
+			json.put("title",a.getTitle());
+			json.put("folder",a.getFolderId());
+			try {
+				System.out.println("friendlyUrl="+themeDisplay.getLayout().getFriendlyURL());
+			} catch (PortalException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			//json.put("friendlyUrl", a.getFriendlyURLsXML())
+			jsonAA.put(json);
+		});
+
+
+		boolean r=true;
+		List<JournalFolder> folders = _jfService.getFolders(groupId);
+		JSONArray jsonAF = JSONFactoryUtil.createJSONArray();
+		folders.stream().forEach(f->{
+			JSONObject json = JSONFactoryUtil.createJSONObject();
+			json.put("name", f.getName());
+			json.put("parent", f.getParentFolderId());
+			json.put("id", f.getFolderId());
+			jsonAF.put(json);
+		});
+		renderRequest.setAttribute("articles", jsonAA.toJSONString());
+		renderRequest.setAttribute("folders", jsonAF.toJSONString());
+
+		include(viewTemplate, renderRequest, renderResponse);
+	}
+	
+	@Reference JournalArticleService _jaService;
+	@Reference JournalFolderService _jfService;
+}
